@@ -7,6 +7,10 @@ export interface Researcher {
   matchScore?: number;
   publications?: number;
   researchInterests?: string[];
+  bio?: string;
+  email?: string;
+  recentPublications?: Publication[];
+  clinicalTrials?: ClinicalTrial[];
 }
 
 export interface Publication {

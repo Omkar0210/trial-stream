@@ -138,7 +138,9 @@ const PatientSearch = () => {
                         }`}
                       />
                     </Button>
-                    <Button size="sm">View Profile</Button>
+                    <Button size="sm" onClick={() => navigate(`/researcher/${researcher.id}`)}>
+                      View Profile
+                    </Button>
                   </div>
                 </div>
               </Card>

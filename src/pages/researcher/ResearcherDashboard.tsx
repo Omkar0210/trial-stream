@@ -134,7 +134,7 @@ const ResearcherDashboard = () => {
               <FileText className="w-4 h-4" />
               <span className="hidden sm:inline">Publications</span>
             </TabsTrigger>
-            <TabsTrigger value="forums" className="flex items-center gap-2 py-3">
+            <TabsTrigger value="forums" className="flex items-center gap-2 py-3" onClick={() => navigate("/forum")}>
               <MessageSquare className="w-4 h-4" />
               <span className="hidden sm:inline">Forums</span>
             </TabsTrigger>

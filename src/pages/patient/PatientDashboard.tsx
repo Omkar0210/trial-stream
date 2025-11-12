@@ -124,7 +124,7 @@ const PatientDashboard = () => {
               <FileText className="w-4 h-4" />
               <span className="hidden sm:inline">Publications</span>
             </TabsTrigger>
-            <TabsTrigger value="forums" className="flex items-center gap-2 py-3">
+            <TabsTrigger value="forums" className="flex items-center gap-2 py-3" onClick={() => navigate("/forum")}>
               <MessageSquare className="w-4 h-4" />
               <span className="hidden sm:inline">Forums</span>
             </TabsTrigger>
@@ -179,7 +179,9 @@ const PatientDashboard = () => {
                         <p className="text-sm text-muted-foreground mb-1">{expert.institution}</p>
                         <p className="text-sm text-muted-foreground">{expert.specialty}</p>
                       </div>
-                      <Button size="sm">View Profile</Button>
+                      <Button size="sm" onClick={() => navigate(`/researcher/${expert.name.toLowerCase().replace(/\s+/g, '-')}`)}>
+                        View Profile
+                      </Button>
                     </div>
                   </Card>
                 ))}
