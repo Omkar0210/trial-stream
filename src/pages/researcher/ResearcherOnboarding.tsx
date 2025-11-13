@@ -16,6 +16,7 @@ const ResearcherOnboarding = () => {
     researchInterests: "",
     location: "",
     orcid: "",
+    researchGateUrl: "",
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -107,7 +108,7 @@ const ResearcherOnboarding = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="orcid">ORCID (Optional)</Label>
+                <Label htmlFor="orcid">ORCID ID <span className="text-muted-foreground text-sm">(Optional - Skip available)</span></Label>
                 <Input
                   id="orcid"
                   placeholder="0000-0000-0000-0000"
@@ -117,6 +118,16 @@ const ResearcherOnboarding = () => {
                 <p className="text-sm text-muted-foreground">
                   Link your ORCID to automatically import publications
                 </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="researchGate">ResearchGate Profile URL <span className="text-muted-foreground text-sm">(Optional - Skip available)</span></Label>
+                <Input
+                  id="researchGate"
+                  placeholder="https://www.researchgate.net/profile/..."
+                  value={formData.researchGateUrl}
+                  onChange={(e) => setFormData({ ...formData, researchGateUrl: e.target.value })}
+                />
               </div>
 
               <Button type="submit" className="w-full" size="lg">

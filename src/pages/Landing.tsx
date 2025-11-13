@@ -58,14 +58,6 @@ const Landing = () => {
           </div>
         </div>
 
-        <div className="mt-16 text-center">
-          <p className="text-sm text-muted-foreground">
-            Already have an account?{" "}
-            <button className="text-primary hover:underline font-medium">
-              Sign in
-            </button>
-          </p>
-        </div>
       </div>
     </div>
   );

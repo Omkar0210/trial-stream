@@ -10,6 +10,9 @@ import {
   MessageSquare, Heart, LogOut, Menu
 } from "lucide-react";
 import VoiceAgent from "@/components/VoiceAgent";
+import { NavigationDrawer } from "@/components/NavigationDrawer";
+import { VapiVoiceAssistant } from "@/components/VapiVoiceAssistant";
+import { AIChatAssistant } from "@/components/AIChatAssistant";
 
 interface PatientData {
   name: string;
@@ -45,6 +48,9 @@ const PatientDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
+      <NavigationDrawer userType="patient" />
+      <VapiVoiceAssistant />
+      <AIChatAssistant />
       {/* Header */}
       <header className="bg-card border-b shadow-soft sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">

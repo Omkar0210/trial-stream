@@ -10,6 +10,9 @@ import {
   MessageSquare, Heart, LogOut
 } from "lucide-react";
 import VoiceAgent from "@/components/VoiceAgent";
+import { NavigationDrawer } from "@/components/NavigationDrawer";
+import { VapiVoiceAssistant } from "@/components/VapiVoiceAssistant";
+import { AIChatAssistant } from "@/components/AIChatAssistant";
 
 interface ResearcherData {
   name: string;
@@ -47,6 +50,9 @@ const ResearcherDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
+      <NavigationDrawer userType="researcher" />
+      <VapiVoiceAssistant />
+      <AIChatAssistant />
       {/* Header */}
       <header className="bg-card border-b shadow-soft sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
