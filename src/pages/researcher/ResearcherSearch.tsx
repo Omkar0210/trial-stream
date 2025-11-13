@@ -5,11 +5,14 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Search, Heart, ExternalLink, UserPlus } from "lucide-react";
+import { ArrowLeft, Search, Heart, ExternalLink, UserPlus, Loader2 } from "lucide-react";
 import { searchResearchers, searchPublications, searchClinicalTrials, toggleFavorite, getFavorites } from "@/services/api";
 import type { Researcher, Publication, ClinicalTrial } from "@/types";
-import VoiceAgent from "@/components/VoiceAgent";
+import { NavigationDrawer } from "@/components/NavigationDrawer";
+import { VapiVoiceAssistant } from "@/components/VapiVoiceAssistant";
+import { AIChatAssistant } from "@/components/AIChatAssistant";
 import { useToast } from "@/hooks/use-toast";
+import { generateSimpleSummary, summarizeClinicalTrial } from "@/services/aiService";
 
 const ResearcherSearch = () => {
   const navigate = useNavigate();
@@ -23,6 +26,9 @@ const ResearcherSearch = () => {
   const [publications, setPublications] = useState<Publication[]>([]);
   const [trials, setTrials] = useState<ClinicalTrial[]>([]);
   const [favorites, setFavorites] = useState(getFavorites());
+  const [pubSummaries, setPubSummaries] = useState<Record<string, string>>({});
+  const [trialSummaries, setTrialSummaries] = useState<Record<string, string>>({});
+  const [loadingSummary, setLoadingSummary] = useState<string | null>(null);
 
   useEffect(() => {
     if (searchQuery) {
@@ -63,8 +69,28 @@ const ResearcherSearch = () => {
     });
   };
 
+  const handleGenerateSummary = async (type: "publication" | "trial", id: string, text: string) => {
+    setLoadingSummary(id);
+    try {
+      const summary = type === "publication" 
+        ? await generateSimpleSummary(text)
+        : await summarizeClinicalTrial(text);
+      
+      if (type === "publication") {
+        setPubSummaries(prev => ({ ...prev, [id]: summary }));
+      } else {
+        setTrialSummaries(prev => ({ ...prev, [id]: summary }));
+      }
+    } catch (error) {
+      console.error("Error generating summary:", error);
+    } finally {
+      setLoadingSummary(null);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-subtle">
+      <NavigationDrawer userType="researcher" />
       <header className="bg-card border-b shadow-soft sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-4">
@@ -172,15 +198,40 @@ const ResearcherSearch = () => {
                     <p className="text-sm text-muted-foreground mb-3">
                       <strong>{pub.journal}</strong> • {pub.date}
                     </p>
-                    <p className="text-sm text-foreground/80 mb-3">{pub.abstract}</p>
-                    <a
-                      href={pub.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-primary hover:underline inline-flex items-center gap-1"
-                    >
-                      Read full paper <ExternalLink className="w-3 h-3" />
-                    </a>
+                    <div className="bg-muted/50 p-3 rounded-lg mb-3">
+                      <p className="text-xs font-semibold text-muted-foreground mb-1">Technical Abstract:</p>
+                      <p className="text-sm text-foreground/80">{pub.abstract}</p>
+                    </div>
+                    {pubSummaries[pub.id] && (
+                      <div className="bg-primary/5 p-3 rounded-lg mb-3">
+                        <p className="text-xs font-semibold text-primary mb-1">AI-Generated Simple Summary:</p>
+                        <p className="text-sm">{pubSummaries[pub.id]}</p>
+                      </div>
+                    )}
+                    <div className="flex gap-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => handleGenerateSummary("publication", pub.id, pub.abstract || "")}
+                        disabled={loadingSummary === pub.id || !!pubSummaries[pub.id]}
+                      >
+                        {loadingSummary === pub.id ? (
+                          <><Loader2 className="w-3 h-3 mr-1 animate-spin" /> Generating...</>
+                        ) : pubSummaries[pub.id] ? (
+                          "Summary Generated"
+                        ) : (
+                          "Generate AI Summary"
+                        )}
+                      </Button>
+                      <a
+                        href={pub.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-primary hover:underline inline-flex items-center gap-1"
+                      >
+                        Read full paper <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </div>
                   </div>
                   <Button
                     variant="ghost"
@@ -214,14 +265,36 @@ const ResearcherSearch = () => {
                       <strong>ID:</strong> {trial.id} • <strong>Location:</strong> {trial.location}
                     </p>
                     <p className="text-sm text-foreground/80 mb-3">{trial.description}</p>
-                    <a
-                      href={trial.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-primary hover:underline inline-flex items-center gap-1"
-                    >
-                      View on ClinicalTrials.gov <ExternalLink className="w-3 h-3" />
-                    </a>
+                    {trialSummaries[trial.id] && (
+                      <div className="bg-primary/5 p-3 rounded-lg mb-3">
+                        <p className="text-xs font-semibold text-primary mb-1">AI Summary:</p>
+                        <p className="text-sm">{trialSummaries[trial.id]}</p>
+                      </div>
+                    )}
+                    <div className="flex gap-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => handleGenerateSummary("trial", trial.id, trial.description)}
+                        disabled={loadingSummary === trial.id || !!trialSummaries[trial.id]}
+                      >
+                        {loadingSummary === trial.id ? (
+                          <><Loader2 className="w-3 h-3 mr-1 animate-spin" /> Generating...</>
+                        ) : trialSummaries[trial.id] ? (
+                          "Summary Generated"
+                        ) : (
+                          "Generate AI Summary"
+                        )}
+                      </Button>
+                      <a
+                        href={trial.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-primary hover:underline inline-flex items-center gap-1"
+                      >
+                        View on ClinicalTrials.gov <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </div>
                   </div>
                   <Button
                     variant="ghost"
@@ -243,7 +316,8 @@ const ResearcherSearch = () => {
         </Tabs>
       </div>
 
-      <VoiceAgent />
+      <VapiVoiceAssistant />
+      <AIChatAssistant />
     </div>
   );
 };

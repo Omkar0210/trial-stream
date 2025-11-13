@@ -7,7 +7,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, Download, FileText } from "lucide-react";
 import { getFavorites, searchResearchers, searchPublications, searchClinicalTrials } from "@/services/api";
 import type { Researcher, Publication, ClinicalTrial } from "@/types";
-import VoiceAgent from "@/components/VoiceAgent";
+import { NavigationDrawer } from "@/components/NavigationDrawer";
+import { VapiVoiceAssistant } from "@/components/VapiVoiceAssistant";
+import { AIChatAssistant } from "@/components/AIChatAssistant";
 import { useToast } from "@/hooks/use-toast";
 
 const PatientFavorites = () => {
@@ -93,6 +95,7 @@ const PatientFavorites = () => {
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
+      <NavigationDrawer userType="patient" />
       <header className="bg-card border-b shadow-soft sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -133,20 +136,20 @@ const PatientFavorites = () => {
           </div>
         </Card>
 
-        <Tabs defaultValue="researchers" className="space-y-6">
+        <Tabs defaultValue="collaborations" className="space-y-6">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="researchers">
-              Experts ({researchers.length})
+            <TabsTrigger value="collaborations">
+              Potential Collaborations ({researchers.length})
             </TabsTrigger>
-            <TabsTrigger value="publications">
-              Publications ({publications.length})
+            <TabsTrigger value="reading">
+              Reading List ({publications.length})
             </TabsTrigger>
             <TabsTrigger value="trials">
-              Trials ({trials.length})
+              Interesting Trials ({trials.length})
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="researchers" className="space-y-4">
+          <TabsContent value="collaborations" className="space-y-4">
             {researchers.length === 0 ? (
               <Card className="p-8 text-center">
                 <p className="text-muted-foreground">No favorite researchers yet. Start exploring!</p>
@@ -170,7 +173,7 @@ const PatientFavorites = () => {
             )}
           </TabsContent>
 
-          <TabsContent value="publications" className="space-y-4">
+          <TabsContent value="reading" className="space-y-4">
             {publications.length === 0 ? (
               <Card className="p-8 text-center">
                 <p className="text-muted-foreground">No favorite publications yet. Start exploring!</p>
@@ -220,7 +223,8 @@ const PatientFavorites = () => {
         </Tabs>
       </div>
 
-      <VoiceAgent />
+      <VapiVoiceAssistant />
+      <AIChatAssistant />
     </div>
   );
 };

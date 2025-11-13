@@ -5,8 +5,10 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, Save } from "lucide-react";
+import { NavigationDrawer } from "@/components/NavigationDrawer";
+import { VapiVoiceAssistant } from "@/components/VapiVoiceAssistant";
+import { AIChatAssistant } from "@/components/AIChatAssistant";
 import { useToast } from "@/hooks/use-toast";
-import VoiceAgent from "@/components/VoiceAgent";
 
 const PatientProfile = () => {
   const navigate = useNavigate();
@@ -32,6 +34,7 @@ const PatientProfile = () => {
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
+      <NavigationDrawer userType="patient" />
       <header className="bg-card border-b shadow-soft sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
           <Button variant="ghost" onClick={() => navigate("/patient/dashboard")}>
@@ -95,7 +98,8 @@ const PatientProfile = () => {
         </Card>
       </div>
 
-      <VoiceAgent />
+      <VapiVoiceAssistant />
+      <AIChatAssistant />
     </div>
   );
 };

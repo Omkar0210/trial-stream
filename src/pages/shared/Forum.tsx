@@ -7,8 +7,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, MessageSquare, Plus, Search } from "lucide-react";
-import VoiceAgent from "@/components/VoiceAgent";
+import { ArrowLeft, MessageSquare, Plus, Search, Tags } from "lucide-react";
+import { NavigationDrawer } from "@/components/NavigationDrawer";
+import { VapiVoiceAssistant } from "@/components/VapiVoiceAssistant";
+import { AIChatAssistant } from "@/components/AIChatAssistant";
 import { useToast } from "@/hooks/use-toast";
 
 interface ForumPost {
@@ -30,7 +32,16 @@ const Forum = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
   const [isNewPostOpen, setIsNewPostOpen] = useState(false);
-  const [newPost, setNewPost] = useState({ title: "", category: "", content: "" });
+  const [newPost, setNewPost] = useState({ title: "", category: "", content: "", tags: "" });
+
+  const availableCategories = [
+    "General Discussion",
+    "Research Questions",
+    "Clinical Trials",
+    "Treatment Options",
+    "Patient Experience",
+    "Collaboration Opportunities"
+  ];
 
   useEffect(() => {
     const type = localStorage.getItem("userType") as "patient" | "researcher";
@@ -105,7 +116,7 @@ const Forum = () => {
     };
 
     setPosts([post, ...posts]);
-    setNewPost({ title: "", category: "", content: "" });
+    setNewPost({ title: "", category: "", content: "", tags: "" });
     setIsNewPostOpen(false);
     toast({
       title: "Post Created",
@@ -124,6 +135,7 @@ const Forum = () => {
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
+      <NavigationDrawer userType={userType} />
       <header className="bg-card border-b shadow-soft sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -181,17 +193,36 @@ const Forum = () => {
                     value={newPost.title}
                     onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
                   />
-                  <Input
-                    placeholder="Category (e.g., Parkinson's Disease, Breast Cancer)"
-                    value={newPost.category}
-                    onChange={(e) => setNewPost({ ...newPost, category: e.target.value })}
-                  />
+                  <Select 
+                    value={newPost.category} 
+                    onValueChange={(value) => setNewPost({ ...newPost, category: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableCategories.map(cat => (
+                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <Textarea
                     placeholder="What would you like to discuss?"
                     value={newPost.content}
                     onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
                     rows={6}
                   />
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium flex items-center gap-2">
+                      <Tags className="w-4 h-4" />
+                      Tags (comma separated)
+                    </label>
+                    <Input
+                      placeholder="e.g., parkinson's, stem cell, clinical trial"
+                      value={newPost.tags}
+                      onChange={(e) => setNewPost({ ...newPost, tags: e.target.value })}
+                    />
+                  </div>
                   <div className="flex gap-2">
                     <Button onClick={handleCreatePost} className="flex-1">
                       Publish Post
@@ -243,7 +274,8 @@ const Forum = () => {
         </div>
       </div>
 
-      <VoiceAgent />
+      <VapiVoiceAssistant />
+      <AIChatAssistant />
     </div>
   );
 };

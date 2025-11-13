@@ -7,7 +7,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import VoiceAgent from "@/components/VoiceAgent";
+import { NavigationDrawer } from "@/components/NavigationDrawer";
+import { VapiVoiceAssistant } from "@/components/VapiVoiceAssistant";
+import { AIChatAssistant } from "@/components/AIChatAssistant";
 
 const ResearcherProfile = () => {
   const navigate = useNavigate();
@@ -38,6 +40,7 @@ const ResearcherProfile = () => {
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
+      <NavigationDrawer userType="researcher" />
       <header className="bg-card border-b shadow-soft sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
           <Button variant="ghost" onClick={() => navigate("/researcher/dashboard")}>
@@ -157,7 +160,8 @@ const ResearcherProfile = () => {
         </Card>
       </div>
 
-      <VoiceAgent />
+      <VapiVoiceAssistant />
+      <AIChatAssistant />
     </div>
   );
 };

@@ -7,7 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { getFavorites, searchResearchers, searchPublications, searchClinicalTrials, toggleFavorite } from "@/services/api";
 import type { Researcher, Publication, ClinicalTrial } from "@/types";
-import VoiceAgent from "@/components/VoiceAgent";
+import { NavigationDrawer } from "@/components/NavigationDrawer";
+import { VapiVoiceAssistant } from "@/components/VapiVoiceAssistant";
+import { AIChatAssistant } from "@/components/AIChatAssistant";
 
 const ResearcherFavorites = () => {
   const navigate = useNavigate();
@@ -39,6 +41,7 @@ const ResearcherFavorites = () => {
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
+      <NavigationDrawer userType="researcher" />
       <header className="bg-card border-b shadow-soft sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-4">
@@ -57,13 +60,13 @@ const ResearcherFavorites = () => {
         <Tabs defaultValue="collaborators" className="space-y-6">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="collaborators">
-              Collaborators ({collaborators.length})
+              Potential Collaborations ({collaborators.length})
             </TabsTrigger>
             <TabsTrigger value="publications">
-              Publications ({publications.length})
+              Reading List ({publications.length})
             </TabsTrigger>
             <TabsTrigger value="trials">
-              Trials ({trials.length})
+              Interesting Trials ({trials.length})
             </TabsTrigger>
           </TabsList>
 
@@ -164,7 +167,8 @@ const ResearcherFavorites = () => {
         </Tabs>
       </div>
 
-      <VoiceAgent />
+      <VapiVoiceAssistant />
+      <AIChatAssistant />
     </div>
   );
 };

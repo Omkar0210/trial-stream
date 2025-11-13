@@ -4,8 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Mail, MessageSquare, ExternalLink } from "lucide-react";
-import VoiceAgent from "@/components/VoiceAgent";
+import { ArrowLeft, Mail, MessageSquare, ExternalLink, UserPlus, Bell, Video } from "lucide-react";
+import { NavigationDrawer } from "@/components/NavigationDrawer";
+import { VapiVoiceAssistant } from "@/components/VapiVoiceAssistant";
+import { AIChatAssistant } from "@/components/AIChatAssistant";
 import type { Researcher } from "@/types";
 import { useToast } from "@/hooks/use-toast";
 
@@ -15,6 +17,8 @@ const ResearcherProfileView = () => {
   const { toast } = useToast();
   const [researcher, setResearcher] = useState<Researcher | null>(null);
   const [hasRequested, setHasRequested] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const userType = (localStorage.getItem("userType") as "patient" | "researcher") || "patient";
 
   useEffect(() => {
     // Mock: In real app, fetch from API using id
@@ -76,13 +80,37 @@ const ResearcherProfileView = () => {
       title: "Messaging Available",
       description: "Start a conversation with this researcher.",
     });
-    // Navigate to messaging page when implemented
+  };
+
+  const handleFollow = () => {
+    setIsFollowing(!isFollowing);
+    toast({
+      title: isFollowing ? "Unfollowed" : "Following",
+      description: isFollowing 
+        ? `You unfollowed ${researcher?.name}`
+        : `You are now following ${researcher?.name}. You'll receive updates on their research.`,
+    });
+  };
+
+  const handleNudge = () => {
+    toast({
+      title: "Nudge Sent",
+      description: `${researcher?.name} has been invited to join the platform.`,
+    });
+  };
+
+  const handleRequestMeeting = () => {
+    toast({
+      title: "Meeting Request Sent",
+      description: `Your meeting request has been sent to ${researcher?.name}.`,
+    });
   };
 
   if (!researcher) return null;
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
+      <NavigationDrawer userType={userType} />
       <header className="bg-card border-b shadow-soft sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
           <Button variant="ghost" onClick={() => navigate(-1)}>
@@ -124,7 +152,15 @@ const ResearcherProfileView = () => {
                 <p className="text-muted-foreground mb-4">{researcher.bio}</p>
               )}
 
-              <div className="flex gap-3">
+              <div className="flex flex-wrap gap-3">
+                <Button 
+                  variant={isFollowing ? "secondary" : "default"}
+                  onClick={handleFollow}
+                >
+                  <UserPlus className="w-4 h-4 mr-2" />
+                  {isFollowing ? "Following" : "Follow"}
+                </Button>
+                
                 {!hasRequested ? (
                   <Button onClick={handleCollaborationRequest}>
                     <MessageSquare className="w-4 h-4 mr-2" />
@@ -136,6 +172,17 @@ const ResearcherProfileView = () => {
                     Send Message
                   </Button>
                 )}
+
+                <Button variant="outline" onClick={handleRequestMeeting}>
+                  <Video className="w-4 h-4 mr-2" />
+                  Request Meeting
+                </Button>
+
+                <Button variant="outline" onClick={handleNudge}>
+                  <Bell className="w-4 h-4 mr-2" />
+                  Nudge to Join
+                </Button>
+                
                 {researcher.email && (
                   <Button variant="outline" asChild>
                     <a href={`mailto:${researcher.email}`}>
@@ -209,7 +256,8 @@ const ResearcherProfileView = () => {
         </Tabs>
       </div>
 
-      <VoiceAgent />
+      <VapiVoiceAssistant />
+      <AIChatAssistant />
     </div>
   );
 };
