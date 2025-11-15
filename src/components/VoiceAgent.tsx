@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { MessageCircle, X, Mic, Send } from "lucide-react";
+import { getChatResponse } from "@/services/aiService";
 
 const VoiceAgent = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,6 +11,7 @@ const VoiceAgent = () => {
   const [messages, setMessages] = useState<Array<{ role: string; content: string }>>([
     { role: "assistant", content: "Hi! I'm your CuraLink assistant. How can I help you search for experts or clinical trials today?" }
   ]);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Persist agent state in sessionStorage
   useEffect(() => {
@@ -23,17 +25,25 @@ const VoiceAgent = () => {
     sessionStorage.setItem("voiceAgentMessages", JSON.stringify(messages));
   }, [messages]);
 
-  const handleSend = () => {
-    if (!message.trim()) return;
+  const handleSend = async () => {
+    if (!message.trim() || isLoading) return;
 
-    const userMessage = { role: "user", content: message };
-    const assistantMessage = { 
-      role: "assistant", 
-      content: "I understand you're looking for information. I can help you search for researchers, clinical trials, or publications. What specific area would you like to explore?"
-    };
-
-    setMessages([...messages, userMessage, assistantMessage]);
+    const userMessage = message.trim();
     setMessage("");
+    setMessages(prev => [...prev, { role: "user", content: userMessage }]);
+    setIsLoading(true);
+
+    try {
+      const response = await getChatResponse(userMessage, messages);
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+    } catch (error) {
+      setMessages(prev => [
+        ...prev,
+        { role: "assistant", content: "I'm having trouble connecting right now. Please try again in a moment." }
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -86,6 +96,17 @@ const VoiceAgent = () => {
                 </div>
               </div>
             ))}
+            {isLoading && (
+              <div className="flex justify-start">
+                <div className="bg-muted p-3 rounded-lg">
+                  <div className="flex gap-1">
+                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse delay-75"></div>
+                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse delay-150"></div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Input */}
@@ -95,6 +116,7 @@ const VoiceAgent = () => {
                 variant="outline"
                 size="icon"
                 className="shrink-0"
+                title="Voice input (feature coming soon)"
               >
                 <Mic className="w-4 h-4" />
               </Button>
@@ -104,11 +126,13 @@ const VoiceAgent = () => {
                 onKeyPress={(e) => e.key === "Enter" && handleSend()}
                 placeholder="Type your message..."
                 className="flex-1"
+                disabled={isLoading}
               />
               <Button
                 onClick={handleSend}
                 size="icon"
                 className="shrink-0"
+                disabled={isLoading || !message.trim()}
               >
                 <Send className="w-4 h-4" />
               </Button>

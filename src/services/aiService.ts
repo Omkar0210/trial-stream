@@ -1,5 +1,5 @@
 // AI Service for summarization and recommendations using OpenAI
-const OPENAI_API_KEY = "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";
+const OPENAI_API_KEY = "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";
 const GEMINI_API_KEY = "AIzaSyCxFyIy_WwzhjyWODvd3LBv2oTiuK4L-Qs";
 
 // Helper to check if API is available
