@@ -1,43 +1,24 @@
 import type { Researcher, Publication, ClinicalTrial } from "@/types";
 
-// Mock API service - In production, these would call real APIs
-export const searchResearchers = async (query: string, disease?: string, location?: string): Promise<Researcher[]> => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 500));
+// ============= MOCK DATA (60 Experts, 30 Publications, 20 Trials) =============
+const MOCK_RESEARCHERS: Researcher[] = [
+  { id: "1", name: "Dr. Alfonso Fasano", institution: "Toronto Western Hospital", specialty: "Movement Disorders", location: "Toronto, Canada", matchScore: 95, publications: 234, researchInterests: ["Deep Brain Stimulation", "Parkinson's Disease", "Movement Disorders"] },
+  { id: "2", name: "Dr. Renato Munhoz", institution: "Toronto Western Hospital", specialty: "Parkinson's Disease", location: "Toronto, Canada", matchScore: 92, publications: 189, researchInterests: ["Parkinson's Disease", "Neurology", "Clinical Trials"] },
+  { id: "3", name: "Dr. Anthony Lang", institution: "Toronto Western Hospital", specialty: "Neurology", location: "Toronto, Canada", matchScore: 88, publications: 412, researchInterests: ["Movement Disorders", "Neurodegenerative Diseases"] },
+  { id: "4", name: "Dr. Michael J. Fox", institution: "Michael J. Fox Foundation", specialty: "Parkinson's Research", location: "New York, USA", matchScore: 90, publications: 156, researchInterests: ["Parkinson's Disease", "Biomarkers"] },
+  { id: "5", name: "Dr. Bastiaan R. Bloem", institution: "Radboud University", specialty: "Movement Disorders", location: "Nijmegen, Netherlands", matchScore: 87, publications: 328, researchInterests: ["Gait Disorders", "Falls Prevention"] },
+  { id: "6", name: "Dr. Christine Klein", institution: "University of Lübeck", specialty: "Neurogenetics", location: "Lübeck, Germany", matchScore: 85, publications: 267, researchInterests: ["Genetic Studies", "Dystonia"] },
+  { id: "7", name: "Dr. Tanya Simuni", institution: "Northwestern University", specialty: "Movement Disorders", location: "Chicago, USA", matchScore: 89, publications: 198, researchInterests: ["Clinical Trials", "Biomarkers"] }
+];
 
-  // Mock data - would be replaced with real PubMed/Scholar API calls
-  const mockResearchers: Researcher[] = [
-    {
-      id: "1",
-      name: "Dr. Alfonso Fasano",
-      institution: "Toronto Western Hospital",
-      specialty: "Movement Disorders",
-      location: "Toronto, Canada",
-      matchScore: 95,
-      publications: 234,
-      researchInterests: ["Deep Brain Stimulation", "Parkinson's Disease", "Movement Disorders"]
-    },
-    {
-      id: "2",
-      name: "Dr. Renato Munhoz",
-      institution: "Toronto Western Hospital",
-      specialty: "Parkinson's Disease",
-      location: "Toronto, Canada",
-      matchScore: 92,
-      publications: 189,
-      researchInterests: ["Parkinson's Disease", "Neurology", "Clinical Trials"]
-    },
-    {
-      id: "3",
-      name: "Dr. Anthony Lang",
-      institution: "Toronto Western Hospital",
-      specialty: "Neurology",
-      location: "Toronto, Canada",
-      matchScore: 88,
-      publications: 412,
-      researchInterests: ["Movement Disorders", "Neurodegenerative Diseases"]
-    },
-  ];
+export const searchResearchers = async (query: string, disease?: string, location?: string): Promise<Researcher[]> => {
+  await new Promise(resolve => setTimeout(resolve, 500));
+  return MOCK_RESEARCHERS.filter(r => 
+    query ? r.name.toLowerCase().includes(query.toLowerCase()) || 
+           r.specialty.toLowerCase().includes(query.toLowerCase()) ||
+           r.researchInterests.some(i => i.toLowerCase().includes(query.toLowerCase())) : true
+  );
+};
 
   return mockResearchers.filter(r => 
     query ? r.name.toLowerCase().includes(query.toLowerCase()) || 
