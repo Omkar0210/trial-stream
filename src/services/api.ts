@@ -20,12 +20,6 @@ export const searchResearchers = async (query: string, disease?: string, locatio
   );
 };
 
-  return mockResearchers.filter(r => 
-    query ? r.name.toLowerCase().includes(query.toLowerCase()) || 
-           r.specialty.toLowerCase().includes(query.toLowerCase()) : true
-  );
-};
-
 export const searchPublications = async (query: string, disease?: string): Promise<Publication[]> => {
   await new Promise(resolve => setTimeout(resolve, 500));
 
